@@ -10,7 +10,7 @@
         <div class="search-box">
           <input type="text" placeholder="Search..." />
         </div>
-        <a href="#" class="new-feature">New Feature Toggle</a>
+        <a class="new-feature" @click="openFeature"> New Feature Toggle </a>
       </div>
     </div>
 
@@ -18,27 +18,117 @@
       <thead>
         <tr>
           <th>Feature Name</th>
-          <th>Enabled</th>
-          <th>Date Created</th>
+          <th>Dev Enabled</th>
+          <th>Prod Enabled</th>
+          <th>Date</th>
         </tr>
       </thead>
+
       <tbody>
-        <!-- Rows for feature toggles will go here -->
-        <!-- Example row:
-          <tr>
-            <td>Feature 1</td>
-            <td>Yes</td>
-            <td>2024-05-06</td>
-          </tr>
-          -->
+        <tr v-for="(feature, index) in featureToggles" :key="index">
+          <td>
+            <a href="#" @click.prevent="openEditDialog(feature)">{{
+              feature.featureName
+            }}</a>
+          </td>
+          <td>{{ feature.devEnabled ? "Yes" : "No" }}</td>
+          <td>{{ feature.prodEnabled ? "Yes" : "No" }}</td>
+          <td>{{ feature.dateCreated }}</td>
+        </tr>
       </tbody>
     </table>
   </div>
+
+  <v-dialog v-model="dialog" max-width="50%">
+    <v-card class="nn-dialog">
+      <v-text-field
+        label="Enter Feature Name"
+        v-model="featureName"
+      ></v-text-field>
+      <div class="env-enabled">
+        <v-switch
+          label="Dev Enabled"
+          color="primary"
+          v-model="devEnabled"
+          inset
+        ></v-switch>
+
+        <v-switch
+          label="Prod Enabled"
+          color="primary"
+          v-model="prodEnabled"
+          inset
+        ></v-switch>
+      </div>
+      <div class="feature-criteria">
+        <v-combobox
+          label="Combobox"
+          :items="['UserId', 'Factory Group']"
+        ></v-combobox>
+      </div>
+
+      <v-card-actions class="margin-top">
+        <v-btn color="primary" @click="closeFeature">Close</v-btn>
+        <v-btn color="primary" @click="saveFeatureToStore">Save</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 
 <script>
-export default {};
+import { mapState } from "vuex";
+export default {
+  data() {
+    return {
+      modalActive: false,
+      dialog: false,
+      enabled: true,
+      prodEnabled: true,
+      devEnabled: false,
+      featureName: "",
+    };
+  },
+  computed: {
+    ...mapState(["featureToggles"]),
+  },
+  methods: {
+    openFeature() {
+      this.modalActive = true;
+      this.dialog = true;
+    },
+    closeFeature() {
+      this.modalActive = false;
+      this.dialog = false;
+    },
+
+    saveFeatureToStore() {
+      if (this.featureToEdit) {
+        // Update existing feature
+        this.featureToEdit.featureName = this.featureName;
+        this.featureToEdit.devEnabled = this.devEnabled;
+        this.featureToEdit.prodEnabled = this.prodEnabled;
+      } else {
+        // Add new feature
+        const newFeature = {
+          featureName: this.featureName,
+          devEnabled: this.devEnabled,
+          prodEnabled: this.prodEnabled,
+          dateCreated: new Date().toLocaleString(),
+        };
+        this.$store.dispatch("saveFeature", newFeature);
+      }
+      this.closeFeature(); // Optionally close the dialog after saving
+    },
+    openEditDialog(feature) {
+      this.featureName = feature.featureName;
+      this.devEnabled = feature.devEnabled;
+      this.prodEnabled = feature.prodEnabled;
+      this.featureToEdit = feature;
+      this.openFeature();
+    },
+  },
+};
 </script>
 
 
@@ -53,12 +143,21 @@ export default {};
   padding: 10px;
   position: relative;
 }
+.nn-dialog {
+  border-radius: 10px;
+  margin: 2px;
+  padding: 10px;
+}
 .project-features {
   background-color: rgb(255, 255, 255);
   border-radius: 12px;
   margin: 26px;
   padding: 10px;
   position: relative;
+}
+.env-enabled {
+  display: flex;
+  gap: 10px;
 }
 .project-name {
   font-size: 16px;
@@ -129,5 +228,44 @@ export default {};
 
 .feature-table th {
   background-color: #f2f2f2;
+}
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.is-active {
+  display: flex;
+}
+
+.modal-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.margin-top {
+  margin-top: 30px;
 }
 </style>
