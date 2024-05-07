@@ -1,9 +1,5 @@
 <template>
   <div class="feature-toggle-project">
-    <div class="project-card">
-      <div class="project-name">My Project</div>
-    </div>
-
     <div class="project-features">
       <div class="feature-header">
         <div class="project-name">Feature toggles</div>
@@ -39,39 +35,41 @@
     </table>
   </div>
 
-  <v-dialog v-model="dialog" max-width="50%">
-    <v-card class="nn-dialog">
-      <v-text-field
-        label="Enter Feature Name"
-        v-model="featureName"
-      ></v-text-field>
-      <div class="env-enabled">
-        <v-switch
-          label="Dev Enabled"
-          color="primary"
-          v-model="devEnabled"
-          inset
-        ></v-switch>
+  <v-dialog v-model="dialog" max-width="100%">
+    <div class="nn-dialog">
+      <v-card>
+        <v-text-field label="Enter Feature Name" v-model="featureName" />
+        <div class="env-enabled">
+          <v-switch
+            label="Dev Enabled"
+            color="primary"
+            v-model="devEnabled"
+            inset
+          />
 
-        <v-switch
-          label="Prod Enabled"
-          color="primary"
-          v-model="prodEnabled"
-          inset
-        ></v-switch>
-      </div>
-      <div class="feature-criteria">
-        <v-combobox
-          label="Combobox"
-          :items="['UserId', 'Factory Group']"
-        ></v-combobox>
-      </div>
+          <v-switch
+            label="Prod Enabled"
+            color="primary"
+            v-model="prodEnabled"
+            inset
+          />
+        </div>
+        <div class="feature-criteria">
+          <v-combobox
+            v-model="selectedItem"
+            label="Combobox"
+            :items="['UserId', 'Factory Group']"
+          />
+        </div>
 
-      <v-card-actions class="margin-top">
-        <v-btn color="primary" @click="closeFeature">Close</v-btn>
-        <v-btn color="primary" @click="saveFeatureToStore">Save</v-btn>
-      </v-card-actions>
-    </v-card>
+        <v-text-field v-if="selectedItem === 'UserId'" label="Enter User ID" />
+      </v-card>
+      <v-card>Hi </v-card>
+    </div>
+    <v-card-actions class="margin-top">
+      <v-btn color="primary" @click="closeFeature">Close</v-btn>
+      <v-btn color="primary" @click="saveFeatureToStore">Save</v-btn>
+    </v-card-actions>
   </v-dialog>
 </template>
 
@@ -87,6 +85,7 @@ export default {
       prodEnabled: true,
       devEnabled: false,
       featureName: "",
+      selectedItem: "",
     };
   },
   computed: {
@@ -145,8 +144,17 @@ export default {
 }
 .nn-dialog {
   border-radius: 10px;
+  display: flex !important;
   margin: 2px;
   padding: 10px;
+  height: 500px;
+  width: 100%;
+}
+.input-dialog {
+  background-color: black;
+}
+.selected-dialog {
+  background-color: red;
 }
 .project-features {
   background-color: rgb(255, 255, 255);
