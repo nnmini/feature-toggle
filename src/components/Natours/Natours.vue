@@ -35,9 +35,15 @@
     </table>
   </div>
 
-  <v-dialog v-model="dialog" max-width="100%">
+  <v-dialog
+    v-model="dialog"
+    persistent
+    width="80%"
+    scrollable
+    content-class="v-dialog--custom"
+  >
     <div class="nn-dialog">
-      <v-card>
+      <v-card class="lg sizeClass">
         <v-text-field label="Enter Feature Name" v-model="featureName" />
         <div class="env-enabled">
           <v-switch
@@ -62,9 +68,21 @@
           />
         </div>
 
-        <v-text-field v-if="selectedItem === 'UserId'" label="Enter User ID" />
+        <v-text-field
+          v-if="selectedItem === 'UserId'"
+          label="Enter User Emails (comma-separated)"
+          class="featureName"
+          v-model="userEmails"
+        />
       </v-card>
-      <v-card>Hi </v-card>
+      <v-card class="sizeClass">
+        Criteria:
+        <ul class="userList" v-if="this.featureToEdit">
+          <li v-for="(email, index) in this.featureToEdit.users" :key="index">
+            {{ email }}
+          </li>
+        </ul>
+      </v-card>
     </div>
     <v-card-actions class="margin-top">
       <v-btn color="primary" @click="closeFeature">Close</v-btn>
@@ -107,6 +125,9 @@ export default {
         this.featureToEdit.featureName = this.featureName;
         this.featureToEdit.devEnabled = this.devEnabled;
         this.featureToEdit.prodEnabled = this.prodEnabled;
+        this.featureToEdit.users = this.userEmails
+          .split(",")
+          .map((email) => email.trim());
       } else {
         // Add new feature
         const newFeature = {
@@ -114,6 +135,7 @@ export default {
           devEnabled: this.devEnabled,
           prodEnabled: this.prodEnabled,
           dateCreated: new Date().toLocaleString(),
+          users: this.userEmails.split(",").map((email) => email.trim()), // Add users to the new feature
         };
         this.$store.dispatch("saveFeature", newFeature);
       }
@@ -134,6 +156,26 @@ export default {
 
 <style scoped>
 @import "./css/style.css";
+.v-dialog--custom {
+  width: 100%;
+}
+
+/* Desktop */
+@media screen and (min-width: 768px) {
+  .v-dialog--custom {
+    width: 50%;
+  }
+}
+.large-dialog {
+  max-width: 500px;
+}
+
+@media (min-width: 576px) {
+  .large-dialog {
+    max-width: 500px;
+    margin: 1.75rem auto;
+  }
+}
 
 .project-card {
   background-color: rgb(255, 255, 255);
@@ -143,15 +185,12 @@ export default {
   position: relative;
 }
 .nn-dialog {
-  border-radius: 10px;
-  display: flex !important;
-  margin: 2px;
-  padding: 10px;
-  height: 500px;
-  width: 100%;
+  display: flex;
 }
 .input-dialog {
   background-color: black;
+  width: 700px;
+  padding-right: 20px;
 }
 .selected-dialog {
   background-color: red;
@@ -275,5 +314,18 @@ export default {
 }
 .margin-top {
   margin-top: 30px;
+}
+.selected-features {
+  width: 200px;
+}
+.featureName {
+  width: 50%;
+}
+.sizeClass {
+  width: min(50em, 100%);
+}
+.userList {
+  padding: 20px;
+  list-style: none;
 }
 </style>
