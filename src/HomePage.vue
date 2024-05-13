@@ -6,6 +6,7 @@
       <router-link to="/CSSLayout">CSS Layout</router-link>
       <router-link to="/FlexBox">Flexbox</router-link>
       <router-link to="/Natours">Natours</router-link>
+      <router-link to="/ChatApp">ChatApp</router-link>
     </div>
   </div>
 </template>

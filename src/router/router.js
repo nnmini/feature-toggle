@@ -12,6 +12,8 @@ import FlexBox from '../components/FlexBox/FlexBox';
 
 import Natours from '../components/Natours/Natours';
 
+import ChatApp from '../components/ChatApp/ChatApp.vue';
+
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
@@ -21,7 +23,8 @@ const routes = [
   { path: '/CSSGrid', name: 'CSSGrid', component: CSSGrid },
   { path: '/CSSLayout', name: 'CSSLayout', component: CSSLayout },
   { path: '/FlexBox', name: 'FlexBox', component: FlexBox },
-  { path: '/Natours', name: 'Natours', component: Natours }
+  { path: '/Natours', name: 'Natours', component: Natours },
+  { path: '/ChatApp', name: 'ChatApp', component: ChatApp }
 
 
 ];
